@@ -1,0 +1,65 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.venv.bak/
+
+# Editor and IDE settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# macOS / Linux / Windows files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Environment files
+.env
+.env.*
+
+# Logs and temporary files
+*.log
+*.bak
+*.swp
+*.tmp
+
+# Compiled files
+*.so
+*.out
+*.o
+
+# PyInstaller
+dist/
+build/
+*.spec
+
+# MongoDB dumps or temp files
+dump/
+*.bson
+*.json
+
+# Test coverage
+htmlcov/
+.coverage
+.tox/
+.nox/
+.cache/
+.pytest_cache/
+
+# MyPy & Pylint
+.mypy_cache/
+.dmypy.json
+.pyre/
+pylint-report.txt
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
