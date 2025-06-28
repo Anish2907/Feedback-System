@@ -2,7 +2,7 @@ import type React from "react"
 import { useState } from "react"
 import { useApp } from "../hooks/useApp"
 import { authAPI } from "../services/api"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Eye, EyeOff, User, Lock } from "lucide-react"
 
 export default function Login() {
@@ -90,7 +90,7 @@ export default function Login() {
                                     />
                                     <button
                                         type="button"
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                        className="cursor-pointer absolute inset-y-0 right-0 pr-3 flex items-center"
                                         onClick={() => setShowPassword(!showPassword)}
                                         disabled={isSubmitting}
                                     >
@@ -124,11 +124,19 @@ export default function Login() {
                                 )}
                             </button>
                         </div>
+
+                        <div className="text-center">
+                            <p className="text-sm text-gray-600">
+                                Don't have an account?{" "}
+                                <Link
+                                    to="/signup"
+                                    className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150"
+                                >
+                                    Sign up here
+                                </Link>
+                            </p>
+                        </div>
                     </form>
-
-                    <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-
-                    </div>
                 </div>
             </div>
         </div>

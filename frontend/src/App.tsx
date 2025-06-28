@@ -6,6 +6,8 @@ import AppContextProvider from "./context/AppContext"
 import { useApp } from "./hooks/useApp"
 import RequireAuth from "./components/RequireAuth"
 import Dashboard from "./components/Dashboard"
+import Signup from "./components/Signup"
+import PersistLogin from "./components/PersistLogin"
 
 // const AppContext = createContext<AppContextType | null>(null)
 
@@ -81,12 +83,15 @@ function App() {
         <div className="min-h-screen bg-gray-50">
           <Routes>
             <Route path="/login" element={currentUser ? <Navigate to="/" replace /> : <Login />} />
+            <Route path="/signup" element={currentUser ? <Navigate to="/" replace /> : <Signup />} />
 
-            <Route element={<RequireAuth />}>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/feedback/new/:employeeId" element={<FeedbackForm />} />
-              <Route path="/feedback/edit/:feedbackId" element={<FeedbackForm />} />
-              <Route path="/feedback/history/:employeeId" element={<FeedbackHistory />} />
+            <Route element={<PersistLogin />}>
+              <Route element={<RequireAuth />}>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/feedback/new/:employeeId" element={<FeedbackForm />} />
+                <Route path="/feedback/edit/:feedbackId" element={<FeedbackForm />} />
+                <Route path="/feedback/history/:employeeId" element={<FeedbackHistory />} />
+              </Route>
             </Route>
           </Routes>
         </div>

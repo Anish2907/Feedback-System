@@ -12,6 +12,7 @@ async def register(user: UserCreate):
         raise HTTPException(status_code=400, detail="Email already exists")
     user_dict = user.model_dump()
     user_dict["password"] = hash_pwd(user.password)
+    user_dict["manager_id"] = str(user.managerId)
     await db.users.insert_one(user_dict)
     return {"msg": "Registered"}
 
@@ -73,3 +74,38 @@ async def get_team_employees(user=Depends(get_current_user)):
         employees.append(emp)
 
     return employees
+
+@router.get("/managers")
+async def get_all_managers():
+    managers_cursor = db.users.find({"role": "manager"})
+    managers = []
+    async for manager in managers_cursor:
+        manager.pop("password", None)
+        manager["id"] = str(manager.pop("_id"))
+        managers.append(manager)
+
+    return managers
+
+@router.get("/refresh")
+async def refresh_user(user=Depends(get_current_user)):
+    # Fetch fresh user data from DB
+    found = await db.users.find_one({"_id": ObjectId(user["_id"])})
+    if not found:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Remove sensitive info
+    found.pop("password", None)
+    found["id"] = str(found.pop("_id"))
+
+    # Add manager name if employee
+    if found["role"] == "employee" and "manager_id" in found:
+        manager = await db.users.find_one({"_id": ObjectId(found["manager_id"])})
+        found["manager_name"] = manager["name"] if manager else None
+
+    # Recreate the token (optional — or reuse the one from header)
+    token = create_token({"sub": found["email"]})
+
+    return {
+        "user": found,
+        "token": token
+    }

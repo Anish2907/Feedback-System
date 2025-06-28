@@ -6,7 +6,7 @@ class UserCreate(BaseModel):
     name: str
     password: str
     role: Literal["manager", "employee"]
-    manager_id: Optional[str] = None  # only for employees
+    managerId: Optional[str] = None  # only for employees
 
 class UserLogin(BaseModel):
     email: str

@@ -12,6 +12,19 @@ export interface LoginResponse {
     token: string
 }
 
+export interface SignupRequest {
+    name: string
+    email: string
+    password: string
+    role: "manager" | "employee"
+    managerId?: string
+}
+
+export interface SignupResponse {
+    user: User
+    token: string
+}
+
 export interface ManagerDashboardResponse {
     employees: User[];
     feedbacks: Feedback[];
@@ -47,7 +60,15 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`)
+        // If token is invalid/expired, clear auth data
+        if (response.status === 401) {
+            localStorage.removeItem("authToken")
+            // Optionally redirect to login
+            if (window.location.pathname !== "/login" && window.location.pathname !== "/signup") {
+                window.location.href = "/login"
+            }
+        }
+        throw new Error(errorData.detail || `HTTP error! status: ${response.status}`)
     }
 
     return response.json()
@@ -63,7 +84,15 @@ export const authAPI = {
 
         // Store token in localStorage
         localStorage.setItem("authToken", response.token)
-        localStorage.setItem("currentUser", JSON.stringify(response.user))
+
+        return response
+    },
+
+    async signup(userData: SignupRequest): Promise<SignupResponse> {
+        const response = await apiRequest<SignupResponse>("/register", {
+            method: "POST",
+            body: JSON.stringify(userData),
+        })
 
         return response
     },
@@ -82,6 +111,15 @@ export const authAPI = {
     async getCurrentUser(): Promise<User> {
         return apiRequest<User>("/auth/me")
     },
+
+    async refreshToken(): Promise<LoginResponse> {
+        const response = await apiRequest<LoginResponse>("/refresh")
+
+        // Update token in localStorage
+        localStorage.setItem("authToken", response.token)
+
+        return response
+    },
 }
 
 // Users API
@@ -92,6 +130,10 @@ export const usersAPI = {
 
     async getAllUsers(): Promise<User[]> {
         return apiRequest<User[]>("/users")
+    },
+
+    async getManagers(): Promise<User[]> {
+        return apiRequest<User[]>("/managers")
     },
 
     async getUser(userId: string): Promise<User> {
